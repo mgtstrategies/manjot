@@ -20,6 +20,7 @@ namespace rnet
             REngine engine = REngine.GetInstance();
 
             // Database Connection and Fetch data
+            // if no package installed install.packages("RODBC")
             engine.Evaluate("library(RODBC)");
             engine.Evaluate("odbcChannel <- odbcConnect('rtest')");
             engine.Evaluate("d <- sqlFetch(odbcChannel,'oilprices')");
@@ -34,7 +35,9 @@ namespace rnet
             //engine.Evaluate("counts <- table(d$Price)");
             //engine.Evaluate("barplot(counts, main = 'Last 10 Years Oil Prices', xlab = 'Oil Prices')");
 
+
             //Graph 3
+            // if no package installed install.packages("ggplot2")
             engine.Evaluate("library(ggplot2)");
             engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");            
             engine.Evaluate("ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
