@@ -19,12 +19,36 @@ namespace rnet
             // There are several options to initialize the engine, but by default the following suffice:
             REngine engine = REngine.GetInstance();
 
+            // Database Connection and Fetch data
+            engine.Evaluate("library(RODBC)");
+            engine.Evaluate("odbcChannel <- odbcConnect('rtest')");
+            engine.Evaluate("d <- sqlFetch(odbcChannel,'oilprices')");
+
+            // graph 1
+            //engine.Evaluate("head(d)");
+            //engine.Evaluate("str(d)");
+            //engine.Evaluate("summary(d$Price)");
+            //engine.Evaluate("plot(d$Price)");
+
+            //Graph 2
+            //engine.Evaluate("counts <- table(d$Price)");
+            //engine.Evaluate("barplot(counts, main = 'Last 10 Years Oil Prices', xlab = 'Oil Prices')");
+
+            //Graph 3
+            engine.Evaluate("library(ggplot2)");
+            engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");            
+            engine.Evaluate("ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
+
+
+            engine.Evaluate("odbcClose(odbcChannel)");
+
             // .NET Framework array to R vector.
+
             NumericVector group1 = engine.CreateNumericVector(new double[] { 30.02, 29.99, 30.11, 29.97, 30.01, 29.99 });
             engine.SetSymbol("group1", group1);
             // Direct parsing from R script.
             NumericVector group2 = engine.Evaluate("group2 <- c(29.89, 29.93, 29.72, 29.98, 30.02, 29.98)").AsNumeric();
-
+           
             // Test difference of mean and get the P-value.
             GenericVector testResult = engine.Evaluate("t.test(group1, group2)").AsList();
             double p = testResult["p.value"].AsNumeric().First();
