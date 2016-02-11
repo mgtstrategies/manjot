@@ -8,12 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//dummy comment + more text
+
 namespace rnet
 {
-    public partial class Form1 : Form
+    public partial class Graph : Form
     {
-        public Form1()
+        public Graph()
         {
             REngine.SetEnvironmentVariables();
             // There are several options to initialize the engine, but by default the following suffice:
@@ -39,7 +39,7 @@ namespace rnet
             //Graph 3
             // if no package installed install.packages("ggplot2")
             engine.Evaluate("library(ggplot2)");
-            engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");            
+            engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");
             engine.Evaluate("ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
 
 
@@ -51,7 +51,7 @@ namespace rnet
             engine.SetSymbol("group1", group1);
             // Direct parsing from R script.
             NumericVector group2 = engine.Evaluate("group2 <- c(29.89, 29.93, 29.72, 29.98, 30.02, 29.98)").AsNumeric();
-           
+
             // Test difference of mean and get the P-value.
             GenericVector testResult = engine.Evaluate("t.test(group1, group2)").AsList();
             double p = testResult["p.value"].AsNumeric().First();
