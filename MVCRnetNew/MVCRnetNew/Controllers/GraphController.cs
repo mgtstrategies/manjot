@@ -12,20 +12,38 @@ namespace MVCRnetNew.Controllers
         // GET: Graph
         public ActionResult Index()
         {
-            //REngine.SetEnvironmentVariables();
+            REngine.SetEnvironmentVariables();
             // There are several options to initialize the engine, but by default the following suffice:
-
 
             REngine engine = REngine.GetInstance();
 
-            //engine.Initialize();
-            // Database Connection and Fetch data
-            // if no package installed install.packages("RODBC")
+            engine.Initialize();
+
+            //Graph directly to image
+            var fname = "C:/_NET/rgraph1.png";
             engine.Evaluate("library(RODBC)");
+            engine.Evaluate("library(ggplot2)");
+            engine.Evaluate("library(scales)");
+            engine.Evaluate("library(plyr)");
             engine.Evaluate("odbcChannel <- odbcConnect('rtest')");
             engine.Evaluate("d <- sqlFetch(odbcChannel,'oilprices')");
 
-            // graph 1
+            engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");
+            engine.Evaluate("p <- ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
+            engine.Evaluate("png('" + fname + "')");
+            engine.Evaluate("print(p)");
+            engine.Evaluate("dev.off()");
+
+
+            // Database Connection and Fetch data
+            // if no package installed install.packages("RODBC")
+
+            //engine.Evaluate("library(RODBC)");
+            //engine.Evaluate("library(ggplot2)");
+            //engine.Evaluate("odbcChannel <- odbcConnect('rtest')");
+            //engine.Evaluate("d <- sqlFetch(odbcChannel,'oilprices')");
+
+            //Graph 1
             //engine.Evaluate("head(d)");
             //engine.Evaluate("str(d)");
             //engine.Evaluate("summary(d$Price)");
@@ -38,13 +56,12 @@ namespace MVCRnetNew.Controllers
 
             //Graph 3
             // if no package installed install.packages("ggplot2")
-            engine.Evaluate("library(ggplot2)");
-            engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");
-            engine.Evaluate("chart <- ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
-            engine.Evaluate("print(chart)");
+            //engine.Evaluate("library(ggplot2)");
+            //engine.Evaluate("levels(d$Date) <- gsub('-', '\n-\n', levels(d$Date))");
+            //engine.Evaluate("chartnew <- ggplot(d, aes(x = Date, y = Price)) + geom_bar(stat = 'identity') + labs(x = 'Date', y = 'Price')");
+            //engine.Evaluate("print(chartnew)");
 
-
-            engine.Evaluate("odbcClose(odbcChannel)");
+            //engine.Evaluate("odbcClose(odbcChannel)");
 
             // .NET Framework array to R vector.
 
@@ -66,5 +83,9 @@ namespace MVCRnetNew.Controllers
             engine.Dispose();
             return View();
         }
+
+
+
+
     }
 }
